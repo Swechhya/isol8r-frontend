@@ -27,7 +27,7 @@ const rootRouter = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <RouterProvider router={rootRouter} />
     </MantineProvider>
   </React.StrictMode>
