@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "@mantine/core/styles.css";
+import {
+  AppShell,
+  Burger,
+  Container,
+  Group,
+  MantineProvider,
+  Stack,
+} from "@mantine/core";
+import { theme } from "./theme";
+import { useDisclosure } from "@mantine/hooks";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [opened, { toggle }] = useDisclosure();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <MantineProvider theme={theme}>
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{
+          width: 300,
+          breakpoint: "sm",
+          collapsed: { mobile: !opened },
+        }}
+        padding="md"
+      >
+        <AppShell.Header>
+          <Stack px={8} justify="center" h="100%">
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
+          </Stack>
+        </AppShell.Header>
 
-export default App
+        <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+
+        <AppShell.Main>Main</AppShell.Main>
+      </AppShell>
+    </MantineProvider>
+  );
+}
