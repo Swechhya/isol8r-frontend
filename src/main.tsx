@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { MantineProvider } from "@mantine/core";
-import Home from "./views/Home";
-import GithubSetup from "./views/GithubSetup/GithubSetup";
-
-import { theme } from "./theme";
 
 import "@mantine/core/styles.css";
 
-const router = createBrowserRouter([
+import App from "./App";
+import GithubSetup from "./views/GithubSetup/GithubSetup";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { MantineProvider } from "@mantine/core";
+import { theme } from "./theme";
+
+const rootRouter = createBrowserRouter([
   {
-    path: "/",
-    element: <Home />,
+    path: "/*",
+    element: <App />,
   },
   {
     path: "/github-setup",
@@ -21,9 +21,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <MantineProvider theme={theme}>
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
-  </MantineProvider>
+  <React.StrictMode>
+    <MantineProvider theme={theme}>
+      <RouterProvider router={rootRouter} />
+    </MantineProvider>
+  </React.StrictMode>
 );
