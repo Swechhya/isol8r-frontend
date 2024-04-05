@@ -1,10 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 
-interface ClientConfig {
-  id: string;
-  secret: string;
-}
-
 const { VITE_API_URL } = import.meta.env;
 
 export const submitClientConfig = async (
