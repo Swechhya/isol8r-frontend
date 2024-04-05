@@ -17,6 +17,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import classes from "./table.module.css";
+import { Navigate } from "react-router";
 
 interface ThProps {
   children: React.ReactNode;

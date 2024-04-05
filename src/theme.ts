@@ -1,13 +1,10 @@
 import { createTheme, Button, rem } from "@mantine/core";
+import classes from "./button.module.css";
 
 export const theme = createTheme({
   components: {
     Button: Button.extend({
-      defaultProps: {
-        color: "cyan",
-        variant: "outline",
-        mt: "20",
-      },
+      classNames: classes,
     }),
   },
   fontSizes: {
