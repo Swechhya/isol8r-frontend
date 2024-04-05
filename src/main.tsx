@@ -1,12 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import { MantineProvider } from '@mantine/core';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { MantineProvider } from "@mantine/core";
 import Home from "./views/Home";
-import GithubSetup from "./GithubSetup";
+import GithubSetup from "./views/GithubSetup/GithubSetup";
+
+import { theme } from "./theme";
 
 const router = createBrowserRouter([
   {
@@ -20,10 +19,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <MantineProvider>
+  <MantineProvider theme={theme}>
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
   </MantineProvider>
 );
-  
