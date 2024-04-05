@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Grid,
   TextInput,
@@ -8,13 +7,11 @@ import {
   Title,
   Text,
   Textarea,
-  Center,
   Stack,
 } from "@mantine/core";
 
 import { useForm } from "@mantine/form";
 
-import classes from "./GithubSetup.module.css";
 
 export default function GithubSetup() {
   const form = useForm({
@@ -33,7 +30,7 @@ export default function GithubSetup() {
           visibleFrom="lg"
           h={"100vh"}
           mah={"100%"}
-          span={{ base: 13, sm: 4 }}
+          span={{ base: 12, sm: 4 }}
         >
           <Container
             h="100%"
