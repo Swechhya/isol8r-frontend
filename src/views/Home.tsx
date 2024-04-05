@@ -1,6 +1,6 @@
-import "@mantine/core/styles.css";
 import {
   AppShell,
+  Box,
   Burger,
   Container,
   Group,
@@ -9,6 +9,8 @@ import {
 } from "@mantine/core";
 import { theme } from "../theme";
 import { useDisclosure } from "@mantine/hooks";
+import { NavbarSegmented } from "../components/navbar/Navbar";
+import { TableSort } from "../components/table/Table";
 
 export default function Home() {
   const [opened, { toggle }] = useDisclosure();
@@ -35,9 +37,16 @@ export default function Home() {
           </Stack>
         </AppShell.Header>
 
-        <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+        <AppShell.Navbar>
+          <NavbarSegmented />
+        </AppShell.Navbar>
 
-        <AppShell.Main>Main</AppShell.Main>
+        <AppShell.Main>
+          <Box>
+            <h1>Deployed Environments 🚀</h1>
+            <TableSort />
+          </Box>
+        </AppShell.Main>
       </AppShell>
     </MantineProvider>
   );

@@ -7,6 +7,8 @@ import GithubSetup from "./views/GithubSetup/GithubSetup";
 
 import { theme } from "./theme";
 
+import "@mantine/core/styles.css";
+
 const router = createBrowserRouter([
   {
     path: "/",
