@@ -1,6 +1,7 @@
 import { AppShell, Burger, Stack } from "@mantine/core";
 import React from "react";
 import { useLocation } from "react-router";
+import { Navigate } from "react-router-dom";
 import { NavbarSegmented } from "./components/navbar/Navbar";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -39,7 +40,7 @@ const App: React.FC = () => {
 
       <AppShell.Main>
         {router.find(({ path }) => location.pathname === path)?.element ?? (
-          <>Not Found!</>
+          <Navigate to="/404" replace={true} />
         )}
       </AppShell.Main>
     </AppShell>

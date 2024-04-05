@@ -8,6 +8,7 @@ import GithubSetup from "./views/GithubSetup/GithubSetup";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
+import NotFoundPage from "./views/NotFoundPage/NotFoundPage";
 
 const rootRouter = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const rootRouter = createBrowserRouter([
   {
     path: "/github-setup",
     element: <GithubSetup />,
+  },
+  {
+    path: "/404",
+    element: <NotFoundPage />,
   },
 ]);
 
