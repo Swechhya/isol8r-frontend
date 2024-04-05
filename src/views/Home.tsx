@@ -7,10 +7,10 @@ import {
   MantineProvider,
   Stack,
 } from "@mantine/core";
-import { theme } from "./theme";
+import { theme } from "../theme";
 import { useDisclosure } from "@mantine/hooks";
 
-export default function App() {
+export default function Home() {
   const [opened, { toggle }] = useDisclosure();
 
   return (
