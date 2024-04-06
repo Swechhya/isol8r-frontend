@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Link } from "react-router-dom";
 import { Container, Title, Text, Button, Group } from "@mantine/core";
 import classes from "./NotFoundPage.module.css";

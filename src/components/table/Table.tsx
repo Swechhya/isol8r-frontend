@@ -56,6 +56,7 @@ function filterData(data: EnvironmentData[], search: string) {
   return data.filter((item) =>
     keys(data[0])
       .filter((item) => typeof item === "string")
+      // @ts-ignore
       .some((key) => item[key].toLowerCase().includes(query))
   );
 }

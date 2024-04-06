@@ -105,7 +105,7 @@ const ShareLink: React.FC<RepoProps> = ({ name }) => {
   );
 };
 
-const EnvFileUpload: React.FC<RepoProps> = ({ name }) => {
+const EnvFileUpload: React.FC<RepoProps> = () => {
   const [file, setFile] = React.useState<File | null>(null);
 
   return (
@@ -129,7 +129,9 @@ const EnvFileUpload: React.FC<RepoProps> = ({ name }) => {
             )}
             <FileButton onChange={setFile}>
               {(props) => (
-                <Button variant="outline" {...props}>Upload App Configuration (.env)</Button>
+                <Button variant="outline" {...props}>
+                  Upload App Configuration (.env)
+                </Button>
               )}
             </FileButton>
           </Group>
