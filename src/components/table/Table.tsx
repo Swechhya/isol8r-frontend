@@ -116,6 +116,7 @@ export type Resource = {
   isAutoUpdate: boolean;
   branch: string;
   link?: string;
+  port?: number;
 };
 
 export function TableSort() {
@@ -137,27 +138,22 @@ export function TableSort() {
   }, [environmentList]);
 
   const handleDeleteFeatureEnvironment = async (id: string) => {
-    console.log("Delete", id);
-    console.log(
-      "Delete",
-      `${import.meta.env.VITE_BACKEND_URL}${DELETE_ENV}${id}`
-    );
+   
 
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}${DELETE_ENV}${id}`
     );
 
-    console.log(res.data);
+    // TODO: add notifs system
+
   };
 
   const handleRedeployFeatureEnvironment = async (id: string) => {
-    console.log("Redeploy", id);
 
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
     );
 
-    console.log(res.data);
   };
 
   const setSorting = (field: keyof EnvironmentData) => {

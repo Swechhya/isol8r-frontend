@@ -8,6 +8,8 @@ import {
   Stack,
   Select,
   Grid,
+  TextInput,
+  NumberInput,
 } from "@mantine/core";
 import { useClickOutside, useUncontrolled } from "@mantine/hooks";
 import classes from "./repoCard.module.css";
@@ -16,6 +18,7 @@ import { AppContext } from "../../App";
 import axios from "axios";
 import { GET_BRANCHES } from "../../constants/endpoints";
 import { Resource } from "../table/Table";
+import { LaunchModalContext } from "./LaunchModal";
 
 interface ImageCheckboxProps {
   checked?: boolean;
@@ -23,10 +26,13 @@ interface ImageCheckboxProps {
   onChange?(checked: boolean): void;
   name: string;
   handleRepoSelected: (repo: Resource) => void;
+  id: string;
+  form: any;
 }
 
 interface RepoCardProps {
   handleRepoSelected: (repo: Resource) => void;
+  form: any;
 }
 
 export function RepoCard({
@@ -35,12 +41,19 @@ export function RepoCard({
   onChange,
   name,
   id,
-  className,
   handleRepoSelected,
+  form,
   ...others
-}: ImageCheckboxProps &
-  Omit<React.ComponentPropsWithoutRef<"button">, keyof ImageCheckboxProps>) {
+}: ImageCheckboxProps) {
   const [branches, setBranches] = React.useState([]);
+  const [isActive, setIsActive] = React.useState(false);
+  const [port, setPort] = React.useState<number>();
+  const [selectedBranch, setSelectedBranch] = React.useState<string | null>(
+    null
+  );
+
+  const { reposSelected, setReposSelected, handlePortChange } =
+    React.useContext(LaunchModalContext);
 
   React.useEffect(() => {
     axios
@@ -50,42 +63,23 @@ export function RepoCard({
       });
   }, []);
 
-  const [value, handleChange] = useUncontrolled({
-    value: checked,
-    defaultValue: defaultChecked,
-    finalValue: false,
-    onChange,
-  });
-
-  const [repoChecked, setRepoChecked] = React.useState<Boolean>(false);
-  console.log("RepoChecked", repoChecked)
-
-  const ref = useClickOutside(() => {
-    console.log("clicked outside");
-  });
-
-  const handleCheckBoxChange = (e: any) => {
-    setRepoChecked(e.target.checked);
-  };
+  const ref = useClickOutside(() => {});
 
   const handleBranchChange = (branch: string | null, repoId: string) => {
-    // if (!repoChecked) {
-    //   return;
-    // }
-    const repo: Resource = { isAutoUpdate: true, branch: branch ?? "", repoId };
+    const repo: Resource = {
+      isAutoUpdate: false,
+      branch: branch ?? "",
+      repoId,
+    };
 
     handleRepoSelected(repo);
   };
 
   return (
     <UnstyledButton
-      {...others}
-      onClick={(e) => {
-        const isTargetDropdown = e.target === ref?.current;
-        !isTargetDropdown && handleChange(!value);
-      }}
-      data-checked={value || undefined}
+      data-checked={isActive || undefined}
       className={classes.button}
+      {...others}
     >
       <Stack w="100%" p={0} m={0}>
         <Group>
@@ -94,15 +88,6 @@ export function RepoCard({
               {name}
             </Text>
           </div>
-
-          <Checkbox
-            checked={value}
-            onChange={(e) => {
-              handleCheckBoxChange(e);
-            }}
-            tabIndex={-1}
-            styles={{ input: { cursor: "pointer" } }}
-          />
         </Group>
 
         <Select
@@ -114,7 +99,19 @@ export function RepoCard({
             value: name,
           }))}
           onChange={(value) => {
-            handleBranchChange(value, id!);
+            setSelectedBranch(value);
+            setIsActive(value ? true : false);
+            handleBranchChange(value, id);
+          }}
+        />
+        <NumberInput
+          label="Port"
+          placeholder="Enter port to expose"
+          required={isActive}
+          disabled={!isActive}
+          onChange={(value) => {
+            setPort(value as number);
+            handlePortChange(value as number, id, reposSelected);
           }}
         />
       </Stack>
@@ -122,10 +119,11 @@ export function RepoCard({
   );
 }
 
-export const RepoCards: React.FC<RepoCardProps> = ({ handleRepoSelected }) => {
+export const RepoCards: React.FC<RepoCardProps> = ({
+  form,
+  handleRepoSelected,
+}) => {
   const { repos } = React.useContext(AppContext);
-
-  console.log("Repos", repos);
 
   return (
     <Box mt={42}>
@@ -135,6 +133,7 @@ export const RepoCards: React.FC<RepoCardProps> = ({ handleRepoSelected }) => {
           <Grid.Col key={item.id} span={{ base: 1, sm: 6 }}>
             <RepoCard
               key={item.name}
+              form={form}
               handleRepoSelected={handleRepoSelected}
               {...item}
             />

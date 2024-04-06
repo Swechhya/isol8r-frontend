@@ -11,6 +11,22 @@ type LaunchModalProps = {
   close: () => void;
 };
 
+type LaunchModalContextType = {
+  reposSelected: Resource[];
+  setReposSelected: React.Dispatch<React.SetStateAction<Resource[]>>;
+  handlePortChange: (
+    port: number,
+    repoId: string,
+    reposSelected: Resource[]
+  ) => void;
+};
+
+export const LaunchModalContext = React.createContext<LaunchModalContextType>({
+  reposSelected: [],
+  setReposSelected: () => {},
+  handlePortChange: () => {},
+});
+
 const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
   const [reposSelected, setReposSelected] = useState<Resource[]>([]);
   const form = useForm({
@@ -21,73 +37,89 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
     },
   });
 
-  const handleSetReposSelected = (repo: Resource) => {
-    let valueReplaced = false;
-    for (let i = 0; i < reposSelected.length; i++) {
-      if (reposSelected[i].repoId == repo.repoId) {
-        reposSelected[i] = repo;
-        valueReplaced = true;
+  const handleSetReposSelected = (resource: Resource) => {
+    const selectedRepos = reposSelected.filter(
+      (repo) => repo.repoId === resource.repoId && resource.branch !== ""
+    );
+
+    if (resource.branch !== "") {
+      selectedRepos.push(resource);
+    }
+
+    setReposSelected([...selectedRepos]);
+  };
+
+  const handlePortChange = (
+    port: number,
+    repoId: string,
+    reposSelected: Resource[]
+  ) => {
+    const updatedRepos = reposSelected.map((repo) => {
+      if (repo.repoId === repoId) {
+        repo.port = port;
       }
-    }
 
-    if (!valueReplaced) {
-      reposSelected.push(repo);
-    }
+      return repo;
+    });
 
-    setReposSelected(reposSelected);
+    setReposSelected(updatedRepos);
   };
 
   return (
-    <Modal
-      size="50%"
-      opened={opened}
-      onClose={close}
-      title="Launch an environment"
-      centered
+    <LaunchModalContext.Provider
+      value={{ reposSelected, setReposSelected, handlePortChange }}
     >
-      <form
-        onSubmit={form.onSubmit(async (values) => {
-          values.resources = reposSelected;
-
-          try {
-            const response = await axios.post(
-              import.meta.env.VITE_BACKEND_URL + CREATE_ENV,
-              values
-            );
-
-            if (response.status === 200) {
-              close();
-            }
-          } catch (error) {
-            // TODO: handle notifs
-            console.error(error);
-          }
-        })}
+      <Modal
+        size="50%"
+        opened={opened}
+        onClose={close}
+        title="Launch an environment"
+        centered
       >
-        <TextInput
-          label="Environment name"
-          placeholder="Enter environment name"
-          required
-          {...form.getInputProps("name")}
-        />
-        <TextInput
-          label="Identifier"
-          placeholder="Enter Identifier"
-          required
-          {...form.getInputProps("identifier")}
-        />
-        <RepoCards handleRepoSelected={handleSetReposSelected} />
-        <Button
-          mt={20}
-          size="md"
-          radius="xl"
-          color="rgba(138, 140, 132, 1)"
-          type="submit"
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            values.resources = reposSelected;
+
+            try {
+              const response = await axios.post(
+                import.meta.env.VITE_BACKEND_URL + CREATE_ENV,
+                values
+              );
+
+              if (response.status === 200) {
+                close();
+              }
+            } catch (error) {
+              // TODO: handle notifs
+              console.error(error);
+            }
+          })}
         >
-          Submit
-        </Button>
-      </form>
-    </Modal>
+          <TextInput
+            label="Environment name"
+            placeholder="Enter environment name"
+            required
+            {...form.getInputProps("name")}
+          />
+          <TextInput
+            label="Identifier"
+            placeholder="Enter Identifier"
+            required
+            {...form.getInputProps("identifier")}
+          />
+          <RepoCards form={form} handleRepoSelected={handleSetReposSelected} />
+          <Button
+            mt={20}
+            size="md"
+            radius="xl"
+            color="rgba(138, 140, 132, 1)"
+            type="submit"
+          >
+            Submit
+          </Button>
+        </form>
+      </Modal>
+    </LaunchModalContext.Provider>
   );
 };
 
