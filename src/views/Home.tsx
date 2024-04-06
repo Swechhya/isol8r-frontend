@@ -31,16 +31,12 @@ export const HomeContext = React.createContext<HomeContextType>({
 
 export default function Home() {
   const [opened, { open, close }] = useDisclosure(false);
-  const [delteSuccess, setDeleteSuccess] = useState(false);
-  const [redeploySuccess, setRedeploySuccess] = useState(false);
+  const [reload, setReload] = useState(false);
 
-  const handleDelete = () => {
-    setDeleteSuccess(true);
+  const handleReload = () => {
+    setReload(true);
   };
 
-  const handleRedeploy = () => {
-    setRedeploySuccess(true);
-  };
   const [selectedRow, setSelectedRow] = React.useState<EnvironmentData>();
 
   const { setEnvironmentList } = React.useContext(AppContext);
@@ -63,7 +59,7 @@ export default function Home() {
         });
         console.error(e);
       });
-  }, [delteSuccess, redeploySuccess]);
+  }, [reload]);
 
   return (
     <HomeContext.Provider
@@ -85,12 +81,9 @@ export default function Home() {
           </Button>
         </Group>
 
-        <TableSort
-          handleDelete={handleDelete}
-          handleRedeploy={handleRedeploy}
-        />
+        <TableSort handleReload={handleReload} />
 
-        <LaunchModal />
+        <LaunchModal handleReload={handleReload} />
       </Box>
     </HomeContext.Provider>
   );
