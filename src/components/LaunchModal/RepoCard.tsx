@@ -70,12 +70,6 @@ export function RepoCard({
         (repo) => repo.repoId === id && repo.branch !== ""
       );
 
-      const unselectedRepos = row.resources.filter(
-        (repo) => repo.repoId === id && repo.branch === ""
-      );
-
-      console.log({ selectedRepos, unselectedRepos, row });
-
       if (selectedRepos.length) {
         setIsActive(true);
         setPort(selectedRepos[0].port);

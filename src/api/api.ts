@@ -12,7 +12,7 @@ export const submitClientConfig = async (
       return res;
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       return null;
     });
   return resp;

@@ -111,8 +111,6 @@ const EnvFileUpload: React.FC<RepoChildrenProps> = (props) => {
   const [file, setFile] = React.useState<File | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
-  console.log(isProcessing);
-
   const { repo } = props;
 
   const handleFileChange = async (file: File | null) => {
@@ -172,7 +170,7 @@ const EnvFileUpload: React.FC<RepoChildrenProps> = (props) => {
             )}
             <FileButton onChange={handleFileChange}>
               {(props) => (
-                <Button variant="outline" {...props}>
+                <Button loading={isProcessing} disabled={isProcessing} variant="outline" {...props}>
                   Upload App Configuration (.env)
                 </Button>
               )}
@@ -190,8 +188,6 @@ const Repo: React.FC<RepoProps> = (props) => {
   const { repos } = React.useContext(AppContext);
 
   const repo = repos.find((repo) => repo.id == id);
-
-  console.log({ repo }, "real");
 
   return (
     <Container>
