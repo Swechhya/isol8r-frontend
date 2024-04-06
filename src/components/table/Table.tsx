@@ -17,13 +17,9 @@ import {
   IconChevronUp,
   IconSearch,
   IconRefresh,
-  IconEdit,
   IconSettings,
 } from "@tabler/icons-react";
 import classes from "./table.module.css";
-import { Navigate } from "react-router";
-import { LIST_REPOS } from "../../constants/endpoints";
-import axios from "axios";
 
 interface ThProps {
   children: React.ReactNode;
@@ -59,6 +55,7 @@ function filterData(data: EnvironmentData[], search: string) {
   return data.filter((item) =>
     keys(data[0])
       .filter((item) => typeof item === "string")
+      // @ts-ignore
       .some((key) => item[key].toLowerCase().includes(query))
   );
 }
@@ -80,9 +77,11 @@ function sortData(
   return filterData(
     [...data].sort((a, b) => {
       if (payload.reversed) {
+        // @ts-ignore
         return b[sortBy].localeCompare(a[sortBy]);
       }
 
+      // @ts-ignore
       return a[sortBy].localeCompare(b[sortBy]);
     }),
     payload.search

@@ -45,6 +45,7 @@ export function RepoCard({
   });
 
   const [repoChecked, setRepoChecked] = useState<Boolean>(false);
+  console.log(repoChecked);
 
   const ref = useClickOutside(() => {
     console.log("clicked outside");

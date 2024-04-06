@@ -1,5 +1,5 @@
 import { AppShell, Burger, Stack } from "@mantine/core";
-import React, { Dispatch, SetStateAction, useContext } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useLocation } from "react-router";
 import { Navigate } from "react-router-dom";
 import { NavbarSegmented } from "./components/navbar/Navbar";
@@ -28,8 +28,6 @@ type AppContextType = {
   repos: RepoData[];
   setRepos: Dispatch<SetStateAction<never[]>>;
 };
-
-
 
 export const AppContext = React.createContext<AppContextType>({
   repos: [],
