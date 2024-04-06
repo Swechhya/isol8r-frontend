@@ -1,43 +1,43 @@
 import { useState } from "react";
 import { Title } from "@mantine/core";
 import {
-  IconShoppingCart,
-  IconMessage2,
-  IconMessages,
   IconSettings,
-  IconFileAnalytics,
-  IconDatabaseImport,
   IconLogout,
   IconSwitchHorizontal,
   IconHome,
+  IconAppWindow,
 } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const nav = [
   {
     header: "General",
     links: [
-      { link: "", label: "Home", icon: IconHome },
+      { link: "/home", label: "Home", icon: IconHome },
       { link: "", label: "Settings", icon: IconSettings },
     ],
   },
-  {
-    header: "Docs",
-    links: [
-      { link: "", label: "Getting Started", icon: IconFileAnalytics },
-      { link: "", label: "API Reference", icon: IconDatabaseImport },
-      { link: "", label: "FAQ", icon: IconMessage2 },
-      { link: "", label: "Contact Support", icon: IconMessages },
-    ],
-  },
+
   {
     header: "Repos",
-    links: [{ link: "", label: "Applications", icon: IconShoppingCart }],
+    links: [{ link: "/repo/capi", label: "CAPI", icon: IconAppWindow }],
   },
 ];
 
 export function NavbarSegmented() {
-  const [active, setActive] = useState("Home");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const currentActiveLabel = nav.reduce((activeLabel, { links }) => {
+    if (activeLabel) return activeLabel;
+
+    const activeLink = links.find(({ link }) => location.pathname === link);
+
+    return activeLink ? activeLink.label : activeLabel;
+  }, "");
+
+  const [active, setActive] = useState(currentActiveLabel || "Home");
 
   const xnav = nav.map(({ header, links }) => {
     return (
@@ -54,7 +54,11 @@ export function NavbarSegmented() {
               key={item.label}
               onClick={(event) => {
                 event.preventDefault();
-                setActive(item.label);
+
+                if (item.link) {
+                  setActive(item.label);
+                  navigate(item.link);
+                }
               }}
             >
               <item.icon className={classes.linkIcon} stroke={1.5} />

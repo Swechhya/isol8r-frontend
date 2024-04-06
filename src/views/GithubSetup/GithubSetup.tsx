@@ -7,14 +7,10 @@ import {
   Title,
   Text,
   Stack,
-  FileInput,
-  rem,
 } from "@mantine/core";
 
 import { useForm } from "@mantine/form";
-import { IconFile } from "@tabler/icons-react";
 import axios from "axios";
-import fs from "fs";
 
 export default function GithubSetup() {
   const form = useForm({
@@ -22,7 +18,7 @@ export default function GithubSetup() {
       clientID: "",
       clientSecret: "",
       installID: "",
-      privateKey: undefined as unknown as File,
+      appID: "",
     },
   });
 
@@ -55,24 +51,14 @@ export default function GithubSetup() {
                   Please provide your github details
                 </Text>
               </Box>
-              import fs from 'fs';
               <form
                 onSubmit={form.onSubmit(async (values) => {
-                  console.log("Values", values);
-
-                  const formData = new FormData();
-
-                  formData.append("clientID", values.clientID);
-                  formData.append("clientSecret", values.clientSecret);
-                  formData.append("installID", values.installID);
-                  formData.append("privateKey", values.privateKey);
-
                   const res = await axios.post(
                     "http://localhost:8080/gh/setup",
-                    formData,
+                    values,
                     {
                       headers: {
-                        "Content-Type": "multipart/form-data",
+                        "Content-Type": "application/json",
                       },
                     }
                   );
@@ -108,20 +94,15 @@ export default function GithubSetup() {
                   />
                 </div>
                 <div>
-                  <FileInput
-                    leftSection={
-                      <IconFile
-                        style={{ width: rem(18), height: rem(18) }}
-                        stroke={1.5}
-                      />
-                    }
-                    label="Attach your CV"
-                    placeholder="Your CV"
-                    leftSectionPointerEvents="none"
+                  <TextInput
+                    label="App ID"
+                    radius="md"
+                    placeholder="App Id"
                     required
-                    {...form.getInputProps("privateKey")}
+                    {...form.getInputProps("appID")}
                   />
                 </div>
+
                 <Button
                   color="black"
                   size="md"
