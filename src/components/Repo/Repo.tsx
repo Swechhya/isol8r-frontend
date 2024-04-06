@@ -56,15 +56,9 @@ const GeneralInformation: React.FC<RepoChildrenProps> = ({ repo }) => {
                 <Title order={3} className={classes.title}>
                   {repo?.name?.toUpperCase()}
                 </Title>
-                <Text>Some description</Text>
               </Stack>
             </Box>
           </Group>
-          <Box>
-            <Button variant="outline" size="xs">
-              Edit App details
-            </Button>
-          </Box>
         </Group>
       </Card>
     </Box>

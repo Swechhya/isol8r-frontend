@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Navigate } from "react-router-dom";
 
@@ -12,6 +12,16 @@ import { AppContext } from "../App";
 
 export default function Home() {
   const [opened, { open, close }] = useDisclosure(false);
+  const [delteSuccess, setDeleteSuccess] = useState(false);
+  const [redeploySuccess, setRedeploySuccess] = useState(false);
+
+  const handleDelete = () => {
+    setDeleteSuccess(true);
+  };
+
+  const handleRedeploy = () => {
+    setRedeploySuccess(true);
+  };
 
   const { setEnvironmentList } = React.useContext(AppContext);
 
@@ -29,7 +39,7 @@ export default function Home() {
         // TODO: handle error with notifications system
         console.error(e);
       });
-  }, []);
+  }, [delteSuccess, redeploySuccess]);
 
   return (
     <Box>
@@ -40,7 +50,7 @@ export default function Home() {
         </Button>
       </Group>
 
-      <TableSort />
+      <TableSort handleDelete={handleDelete} handleRedeploy={handleRedeploy} />
 
       <LaunchModal opened={opened} close={close} />
     </Box>

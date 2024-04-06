@@ -1,12 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Title } from "@mantine/core";
-import {
-  IconSettings,
-  IconLogout,
-  IconSwitchHorizontal,
-  IconHome,
-  IconAppWindow,
-} from "@tabler/icons-react";
+import { IconSettings, IconHome, IconAppWindow } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppContext, RepoData } from "../../App";
@@ -16,10 +10,7 @@ import { LIST_REPOS } from "../../constants/endpoints";
 const nav = [
   {
     header: "General",
-    links: [
-      { link: "/home", label: "Home", icon: IconHome },
-      { link: "", label: "Settings", icon: IconSettings },
-    ],
+    links: [{ link: "/home", label: "Home", icon: IconHome }],
   },
 
   {
@@ -40,7 +31,7 @@ export function NavbarSegmented() {
       .get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS)
       .then((response) => {
         const data = response.data.data as RepoData[];
-        
+
         setRepos(data);
 
         let repoNavs = nav.find(({ header }) => header === "Repos");
@@ -69,7 +60,7 @@ export function NavbarSegmented() {
 
   const xnav = nav.map(({ header, links }) => {
     return (
-      <div key={header}>
+      <div key={header} style={{ marginTop: "20px" }}>
         <Title order={3} className={classes.navTitle} mb={8}>
           {header}
         </Title>
@@ -101,26 +92,6 @@ export function NavbarSegmented() {
   return (
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>{xnav}</div>
-
-      <div className={classes.footer}>
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => event.preventDefault()}
-        >
-          <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-          <span>Change account</span>
-        </a>
-
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => event.preventDefault()}
-        >
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
-      </div>
     </nav>
   );
 }

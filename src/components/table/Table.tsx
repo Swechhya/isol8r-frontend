@@ -119,7 +119,15 @@ export type Resource = {
   port?: number;
 };
 
-export function TableSort() {
+type TableSortProps = {
+  handleDelete: () => void;
+  handleRedeploy: () => void;
+};
+
+export const TableSort: React.FC<TableSortProps> = ({
+  handleDelete,
+  handleRedeploy,
+}) => {
   const { environmentList } = React.useContext(AppContext);
 
   const [search, setSearch] = useState("");
@@ -138,22 +146,23 @@ export function TableSort() {
   }, [environmentList]);
 
   const handleDeleteFeatureEnvironment = async (id: string) => {
-   
-
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}${DELETE_ENV}${id}`
     );
 
-    // TODO: add notifs system
-
+    if (res.data && res.data.data === "OK") {
+      handleDelete();
+    }
   };
 
   const handleRedeployFeatureEnvironment = async (id: string) => {
-
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
     );
 
+    if (res.data && res.data.data) {
+      handleRedeploy();
+    }
   };
 
   const setSorting = (field: keyof EnvironmentData) => {
@@ -289,4 +298,4 @@ export function TableSort() {
       </Table>
     </ScrollArea>
   );
-}
+};
