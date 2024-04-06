@@ -9,7 +9,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AppContext } from "../../App";
+import { AppContext, RepoData } from "../../App";
 import axios from "axios";
 import { LIST_REPOS } from "../../constants/endpoints";
 
@@ -29,36 +29,43 @@ const nav = [
 ];
 
 export function NavbarSegmented() {
+  const [active, setActive] = React.useState("Home");
+  const { repos, setRepos } = React.useContext(AppContext);
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { repos, setRepos } = React.useContext(AppContext);
-
   React.useEffect(() => {
-    axios.get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS).then((response) => {
-      setRepos(response.data.data);
-    });
+    axios
+      .get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS)
+      .then((response) => {
+        const data = response.data.data as RepoData[];
+        
+        setRepos(data);
+
+        let repoNavs = nav.find(({ header }) => header === "Repos");
+
+        if (repoNavs) {
+          repoNavs.links = data.map((repo) => ({
+            link: `/repo/${repo.id}`,
+            label: repo.name,
+            icon: IconAppWindow,
+          }));
+        }
+
+        const currentActiveLabel = nav.reduce((activeLabel, { links }) => {
+          if (activeLabel) return activeLabel;
+
+          const activeLink = links.find(
+            ({ link }) => location.pathname === link
+          );
+
+          return activeLink ? activeLink.label : activeLabel;
+        }, "");
+
+        setActive(currentActiveLabel);
+      });
   }, []);
-
-  let repoNavs = nav.find(({ header }) => header === "Repos");
-
-  if (repoNavs) {
-    repoNavs.links = repos.map((repo) => ({
-      link: `/repo/${repo.name}`,
-      label: repo.name,
-      icon: IconAppWindow,
-    }));
-  }
-
-  const currentActiveLabel = nav.reduce((activeLabel, { links }) => {
-    if (activeLabel) return activeLabel;
-
-    const activeLink = links.find(({ link }) => location.pathname === link);
-
-    return activeLink ? activeLink.label : activeLabel;
-  }, "");
-
-  const [active, setActive] = useState(currentActiveLabel || "Home");
 
   const xnav = nav.map(({ header, links }) => {
     return (

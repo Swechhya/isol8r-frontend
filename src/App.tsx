@@ -15,19 +15,19 @@ const router = [
     element: Home,
   },
   {
-    path: "/repo/{name}",
+    path: "/repo/{id}",
     element: Repo,
   },
 ];
 
-type RepoData = {
+export type RepoData = {
   id: string;
   name: string;
 };
 
 type AppContextType = {
   repos: RepoData[];
-  setRepos: Dispatch<SetStateAction<never[]>>;
+  setRepos: Dispatch<SetStateAction<RepoData[]>>;
   environmentList: EnvironmentData[];
   setEnvironmentList: Dispatch<SetStateAction<never[]>>;
 };
@@ -44,7 +44,7 @@ const App: React.FC = () => {
   const location = useLocation();
   let match: null | boolean | Object = null;
 
-  const [repos, setRepos] = React.useState([]);
+  const [repos, setRepos] = React.useState<RepoData[]>([]);
   const [environmentList, setEnvironmentList] = React.useState([]);
 
   const MatchedComponent = router.find(({ path }) => {

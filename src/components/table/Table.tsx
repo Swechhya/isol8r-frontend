@@ -57,12 +57,14 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
 function filterData(data: EnvironmentData[], search: string) {
   const query = search.toLowerCase().trim();
   return data.filter((item) =>
-    keys(data[0]).some(
-      (key) =>
-        typeof item[key] === "string" &&
-        // @ts-ignore
-        item[key].toLowerCase().includes(query)
-    )
+    keys(item)
+      // @ts-ignore
+      .some((key) => {
+        return (
+          typeof item[key] === "string" &&
+          item[key].toLowerCase().includes(query)
+        );
+      })
   );
 }
 
@@ -168,8 +170,9 @@ export function TableSort() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
+
     setSortedData(
-      sortData(sortedData, {
+      sortData(environmentList, {
         sortBy,
         reversed: reverseSortDirection,
         search: value,

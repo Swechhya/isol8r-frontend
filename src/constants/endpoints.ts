@@ -4,3 +4,4 @@ export const LIST_ENV = "/fe/list";
 export const CREATE_ENV = "/fe/create";
 export const DELETE_ENV = "/fe/delete/";
 export const REDEPLOY_ENV = "/fe/redeploy/";
+export const SAVE_ENV = "/gh/save-env";

@@ -19,12 +19,19 @@ import {
 
 import classes from "./repo.module.css";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
+import axios from "axios";
+import { SAVE_ENV } from "../../constants/endpoints";
+import { AppContext, RepoData } from "../../App";
 
 type RepoProps = {
-  name?: string;
+  id?: string;
 };
 
-const GeneralInformation: React.FC<RepoProps> = ({ name }) => {
+type RepoChildrenProps = {
+  repo?: RepoData;
+};
+
+const GeneralInformation: React.FC<RepoChildrenProps> = ({ repo }) => {
   return (
     <Box mb={42}>
       <Title mb={32}>General Information</Title>
@@ -47,7 +54,7 @@ const GeneralInformation: React.FC<RepoProps> = ({ name }) => {
                   </Badge>
                 </Group>
                 <Title order={3} className={classes.title}>
-                  {name?.toUpperCase()}
+                  {repo?.name?.toUpperCase()}
                 </Title>
                 <Text>Some description</Text>
               </Stack>
@@ -64,8 +71,8 @@ const GeneralInformation: React.FC<RepoProps> = ({ name }) => {
   );
 };
 
-const ShareLink: React.FC<RepoProps> = ({ name }) => {
-  const url = `https://capi.dev.phil.us/${name}`;
+const ShareLink: React.FC<RepoChildrenProps> = ({ repo }) => {
+  const url = `https://capi.dev.phil.us/${repo?.name}`;
 
   return (
     <Card mb={42} radius="md" className={classes.card}>
@@ -105,8 +112,45 @@ const ShareLink: React.FC<RepoProps> = ({ name }) => {
   );
 };
 
-const EnvFileUpload: React.FC<RepoProps> = () => {
+const EnvFileUpload: React.FC<RepoChildrenProps> = (props) => {
   const [file, setFile] = React.useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+
+  const { repo } = props;
+
+  console.log({ props });
+
+  const handleFileChange = async (file: File | null) => {
+    try {
+      setFile(file);
+
+      setIsProcessing((p) => !p);
+
+      const formData = new FormData();
+      formData.append("file", file as Blob);
+
+      const response = await axios.post(
+        import.meta.env.VITE_BACKEND_URL + SAVE_ENV + `/${repo?.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.status === 200) {
+        // TODO: handle notifs system
+        alert("File uploaded successfully");
+      } else {
+        alert("Failed to upload file");
+      }
+    } catch (error) {
+      // TODO: handle notifs system
+      console.log(error);
+    } finally {
+      setIsProcessing((p) => !p);
+    }
+  };
 
   return (
     <Card radius="md" className={classes.card}>
@@ -127,7 +171,7 @@ const EnvFileUpload: React.FC<RepoProps> = () => {
                 </Badge>
               </Box>
             )}
-            <FileButton onChange={setFile}>
+            <FileButton onChange={handleFileChange}>
               {(props) => (
                 <Button variant="outline" {...props}>
                   Upload App Configuration (.env)
@@ -141,12 +185,20 @@ const EnvFileUpload: React.FC<RepoProps> = () => {
   );
 };
 
-const Repo: React.FC<RepoProps> = ({ name }) => {
+const Repo: React.FC<RepoProps> = (props) => {
+  const id = props.id;
+
+  const { repos } = React.useContext(AppContext);
+
+  const repo = repos.find((repo) => repo.id == id);
+
+  console.log({ repo }, "real");
+
   return (
     <Container>
-      <GeneralInformation name={name} />
-      <ShareLink name={name} />
-      <EnvFileUpload name={name} />
+      <GeneralInformation repo={repo} />
+      <ShareLink repo={repo} />
+      <EnvFileUpload repo={repo} />
     </Container>
   );
 };

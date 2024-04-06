@@ -17,7 +17,7 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
     initialValues: {
       name: "",
       identifier: "",
-      resource: [] as Resource[],
+      resources: [] as Resource[],
     },
   });
 
@@ -47,7 +47,7 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
     >
       <form
         onSubmit={form.onSubmit(async (values) => {
-          values.resource = reposSelected;
+          values.resources = reposSelected;
 
           try {
             const response = await axios.post(
