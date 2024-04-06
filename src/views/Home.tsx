@@ -3,12 +3,30 @@ import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Box, Button, Group, Title } from "@mantine/core";
-import { TableSort } from "../components/table/Table";
+import { EnvironmentData, TableSort } from "../components/table/Table";
 import { useDisclosure } from "@mantine/hooks";
 import LaunchModal from "../components/LaunchModal/LaunchModal";
 import axios from "axios";
 import { LIST_ENV } from "../constants/endpoints";
 import { AppContext } from "../App";
+
+type HomeContextType = {
+  opened: boolean;
+  open: () => void;
+  close: () => void;
+  setSelectedRow: React.Dispatch<
+    React.SetStateAction<EnvironmentData | undefined>
+  >;
+  row: EnvironmentData | undefined;
+};
+
+export const HomeContext = React.createContext<HomeContextType>({
+  opened: false,
+  open: () => {},
+  close: () => {},
+  setSelectedRow: () => {},
+  row: {} as EnvironmentData,
+});
 
 export default function Home() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -22,6 +40,7 @@ export default function Home() {
   const handleRedeploy = () => {
     setRedeploySuccess(true);
   };
+  const [selectedRow, setSelectedRow] = React.useState<EnvironmentData>();
 
   const { setEnvironmentList } = React.useContext(AppContext);
 
@@ -33,7 +52,7 @@ export default function Home() {
           <Navigate to="/github-setup" replace={true} />;
         }
 
-        setEnvironmentList(response.data.data);
+        setEnvironmentList(response?.data?.data ?? []);
       })
       .catch((e) => {
         // TODO: handle error with notifications system
@@ -42,17 +61,32 @@ export default function Home() {
   }, [delteSuccess, redeploySuccess]);
 
   return (
-    <Box>
-      <Group align="center" justify="space-between" mb={32}>
-        <Title order={1}> Isolated Environments 🚀</Title>
-        <Button size="md" radius="xl" color="teal" onClick={open}>
-          Deploy New Environment
-        </Button>
-      </Group>
+    <HomeContext.Provider
+      value={{ opened, open, close, setSelectedRow, row: selectedRow }}
+    >
+      <Box>
+        <Group align="center" justify="space-between" mb={32}>
+          <Title order={1}>Isolated Environments 🚀</Title>
+          <Button
+            size="md"
+            radius="xl"
+            color="teal"
+            onClick={() => {
+              setSelectedRow(undefined);
+              open();
+            }}
+          >
+            Deploy New Environment
+          </Button>
+        </Group>
 
-      <TableSort handleDelete={handleDelete} handleRedeploy={handleRedeploy} />
+        <TableSort
+          handleDelete={handleDelete}
+          handleRedeploy={handleRedeploy}
+        />
 
-      <LaunchModal opened={opened} close={close} />
-    </Box>
+        <LaunchModal />
+      </Box>
+    </HomeContext.Provider>
   );
 }

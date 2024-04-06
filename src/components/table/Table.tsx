@@ -24,6 +24,7 @@ import classes from "./table.module.css";
 import { AppContext } from "../../App";
 import axios from "axios";
 import { DELETE_ENV, REDEPLOY_ENV } from "../../constants/endpoints";
+import Home, { HomeContext } from "../../views/Home";
 
 interface ThProps {
   children: React.ReactNode;
@@ -129,6 +130,7 @@ export const TableSort: React.FC<TableSortProps> = ({
   handleRedeploy,
 }) => {
   const { environmentList } = React.useContext(AppContext);
+  const { open, setSelectedRow } = React.useContext(HomeContext);
 
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(environmentList);
@@ -153,16 +155,21 @@ export const TableSort: React.FC<TableSortProps> = ({
     if (res.data && res.data.data === "OK") {
       handleDelete();
     }
+    // TODO: add notifs system
   };
 
   const handleRedeployFeatureEnvironment = async (id: string) => {
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
     );
-
     if (res.data && res.data.data) {
       handleRedeploy();
     }
+  };
+
+  const handleEditFeatureEnvironment = (row: EnvironmentData) => {
+    setSelectedRow({ ...row });
+    open();
   };
 
   const setSorting = (field: keyof EnvironmentData) => {
@@ -202,7 +209,7 @@ export const TableSort: React.FC<TableSortProps> = ({
             }}
           >
             <IconRefresh style={{ width: "70%", height: "70%" }} stroke={1.5} />
-          </ActionIcon>{" "}
+          </ActionIcon>
           <ActionIcon
             variant="filled"
             color="rgba(71, 59, 59, 1)"
@@ -211,12 +218,15 @@ export const TableSort: React.FC<TableSortProps> = ({
             <IconSettings
               style={{ width: "70%", height: "70%" }}
               stroke={1.5}
+              onClick={() => {
+                handleEditFeatureEnvironment(row);
+              }}
             />
           </ActionIcon>
           <ActionIcon
             variant="filled"
             color="rgba(71, 59, 59, 1)"
-            aria-label="Settings"
+            aria-label="Delete"
             onClick={() => {
               handleDeleteFeatureEnvironment(row.id);
             }}

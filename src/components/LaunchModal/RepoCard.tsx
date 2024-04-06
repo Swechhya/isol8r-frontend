@@ -19,6 +19,7 @@ import axios from "axios";
 import { GET_BRANCHES } from "../../constants/endpoints";
 import { Resource } from "../table/Table";
 import { LaunchModalContext } from "./LaunchModal";
+import { HomeContext } from "../../views/Home";
 
 interface ImageCheckboxProps {
   checked?: boolean;
@@ -55,6 +56,8 @@ export function RepoCard({
   const { reposSelected, setReposSelected, handlePortChange } =
     React.useContext(LaunchModalContext);
 
+  const {row} = React.useContext(HomeContext);
+
   React.useEffect(() => {
     axios
       .get(import.meta.env.VITE_BACKEND_URL + GET_BRANCHES + `/${id}`)
@@ -62,6 +65,26 @@ export function RepoCard({
         setBranches(response.data.data);
       });
   }, []);
+
+  React.useEffect(() => {
+    if (row?.resources) {
+      const selectedRepos = row.resources.filter(
+        (repo) => repo.repoId === id && repo.branch !== ""
+      );
+
+      const unselectedRepos = row.resources.filter(
+        (repo) => repo.repoId === id && repo.branch === ""
+      );
+
+      console.log({ selectedRepos, unselectedRepos, row });
+
+      if (selectedRepos.length) {
+        setIsActive(true);
+        setPort(selectedRepos[0].port);
+        setSelectedBranch(selectedRepos[0].branch);
+      }
+    }
+  }, [row]);
 
   const ref = useClickOutside(() => {});
 
@@ -94,6 +117,7 @@ export function RepoCard({
           ref={ref}
           label="Branch"
           placeholder="Select branch"
+          value={selectedBranch}
           data={branches.map(({ name, commit: { sha } }) => ({
             label: `${name} (${sha})`,
             value: name,
@@ -107,6 +131,7 @@ export function RepoCard({
         <NumberInput
           label="Port"
           placeholder="Enter port to expose"
+          value={port}
           required={isActive}
           disabled={!isActive}
           onChange={(value) => {

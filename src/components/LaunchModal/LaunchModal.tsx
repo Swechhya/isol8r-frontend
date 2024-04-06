@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import { Modal, TextInput, Button } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { RepoCards } from "./RepoCard";
-import { Resource } from "../table/Table";
+import { EnvironmentData, Resource } from "../table/Table";
 import axios from "axios";
-import { CREATE_ENV } from "../../constants/endpoints";
+import { CREATE_ENV, SAVE_ENV, UPDATE_ENV } from "../../constants/endpoints";
+import { HomeContext } from "../../views/Home";
 
-type LaunchModalProps = {
-  opened: boolean;
-  close: () => void;
-};
+type LaunchModalProps = {};
 
 type LaunchModalContextType = {
   reposSelected: Resource[];
@@ -27,8 +25,20 @@ export const LaunchModalContext = React.createContext<LaunchModalContextType>({
   handlePortChange: () => {},
 });
 
-const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
+const LaunchModal: React.FC<LaunchModalProps> = () => {
   const [reposSelected, setReposSelected] = useState<Resource[]>([]);
+  const { opened, close, row } = React.useContext(HomeContext);
+
+  React.useEffect(() => {
+    form.setValues({
+      identifier: row?.identifier ?? "",
+      name: row?.name ?? "",
+      resources: row?.resources?.length ? row.resources : ([] as Resource[]),
+    });
+
+    setReposSelected(row?.resources ?? []);
+  }, [row]);
+
   const form = useForm({
     initialValues: {
       name: "",
@@ -38,15 +48,19 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
   });
 
   const handleSetReposSelected = (resource: Resource) => {
-    const selectedRepos = reposSelected.filter(
-      (repo) => repo.repoId === resource.repoId && resource.branch !== ""
-    );
-
-    if (resource.branch !== "") {
-      selectedRepos.push(resource);
+    let removed = false;
+    if (resource.branch === "") {
+      removed = true;
     }
 
-    setReposSelected([...selectedRepos]);
+    if (removed) {
+      const selected = reposSelected.filter(
+        (repo) => repo.repoId !== resource.repoId
+      );
+      setReposSelected([...selected]);
+    } else {
+      setReposSelected((p) => [...p, resource]);
+    }
   };
 
   const handlePortChange = (
@@ -71,9 +85,9 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
     >
       <Modal
         size="50%"
-        opened={opened}
-        onClose={close}
-        title="Launch an environment"
+        opened={opened!}
+        onClose={close!}
+        title={`${row ? "Edit" : "Launch"} an environment`}
         centered
       >
         <form
@@ -82,12 +96,13 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
 
             try {
               const response = await axios.post(
-                import.meta.env.VITE_BACKEND_URL + CREATE_ENV,
+                import.meta.env.VITE_BACKEND_URL +
+                  (row ? UPDATE_ENV + `/${row?.id}` : CREATE_ENV),
                 values
               );
 
               if (response.status === 200) {
-                close();
+                close!();
               }
             } catch (error) {
               // TODO: handle notifs
