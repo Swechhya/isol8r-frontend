@@ -1,16 +1,27 @@
 import React from "react";
-import { Modal, Button } from "@mantine/core";
+import { Modal, TextInput } from "@mantine/core";
+import { RepoCards } from "./RepoCard";
 
 type LaunchModalProps = {
   opened: boolean;
-  open: () => void;
   close: () => void;
 };
 
-const LaunchModal: React.FC<LaunchModalProps> = ({ opened, open, close }) => {
+const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
   return (
-    <Modal opened={opened} onClose={close} title="Authentication" centered>
-      something
+    <Modal
+      size='50%'
+      opened={opened}
+      onClose={close}
+      title="Launch an environment"
+      centered
+    >
+      <TextInput
+        label="Environment name"
+        placeholder="Enter environment name"
+        required
+      />
+      <RepoCards />
     </Modal>
   );
 };

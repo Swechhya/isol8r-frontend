@@ -6,12 +6,15 @@ import {
   Button,
   Title,
   Text,
-  Textarea,
   Stack,
+  FileInput,
+  rem,
 } from "@mantine/core";
 
 import { useForm } from "@mantine/form";
-
+import { IconFile } from "@tabler/icons-react";
+import axios from "axios";
+import fs from "fs";
 
 export default function GithubSetup() {
   const form = useForm({
@@ -19,7 +22,7 @@ export default function GithubSetup() {
       clientID: "",
       clientSecret: "",
       installID: "",
-      privateKey: "",
+      privateKey: undefined as unknown as File,
     },
   });
 
@@ -52,16 +55,37 @@ export default function GithubSetup() {
                   Please provide your github details
                 </Text>
               </Box>
+              import fs from 'fs';
               <form
-                onSubmit={form.onSubmit((values) =>
-                  console.log("Values", values)
-                )}
+                onSubmit={form.onSubmit(async (values) => {
+                  console.log("Values", values);
+
+                  const formData = new FormData();
+
+                  formData.append("clientID", values.clientID);
+                  formData.append("clientSecret", values.clientSecret);
+                  formData.append("installID", values.installID);
+                  formData.append("privateKey", values.privateKey);
+
+                  const res = await axios.post(
+                    "http://localhost:8080/gh/setup",
+                    formData,
+                    {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                      },
+                    }
+                  );
+
+                  console.log({ res });
+                })}
               >
                 <Box mb={8}>
                   <TextInput
                     label="Client ID"
                     radius="md"
                     placeholder="Client Id"
+                    required
                     {...form.getInputProps("clientID")}
                   />
                 </Box>
@@ -70,6 +94,7 @@ export default function GithubSetup() {
                     label="Client Secret"
                     radius="md"
                     placeholder="Client Secret"
+                    required
                     {...form.getInputProps("clientSecret")}
                   />
                 </div>
@@ -78,14 +103,22 @@ export default function GithubSetup() {
                     label="Install ID"
                     radius="md"
                     placeholder="Install Id"
+                    required
                     {...form.getInputProps("installID")}
                   />
                 </div>
                 <div>
-                  <Textarea
-                    label="Private Key"
-                    placeholder="Private key"
-                    rows={4}
+                  <FileInput
+                    leftSection={
+                      <IconFile
+                        style={{ width: rem(18), height: rem(18) }}
+                        stroke={1.5}
+                      />
+                    }
+                    label="Attach your CV"
+                    placeholder="Your CV"
+                    leftSectionPointerEvents="none"
+                    required
                     {...form.getInputProps("privateKey")}
                   />
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   ScrollArea,
@@ -9,21 +9,27 @@ import {
   TextInput,
   rem,
   keys,
+  ActionIcon,
 } from "@mantine/core";
 import {
   IconSelector,
   IconChevronDown,
   IconChevronUp,
   IconSearch,
+  IconRefresh,
+  IconEdit,
+  IconSettings,
 } from "@tabler/icons-react";
 import classes from "./table.module.css";
 import { Navigate } from "react-router";
+import { LIST_REPOS } from "../../constants/endpoints";
+import axios from "axios";
 
 interface ThProps {
   children: React.ReactNode;
-  reversed: boolean;
-  sorted: boolean;
-  onSort(): void;
+  reversed?: boolean;
+  sorted?: boolean;
+  onSort?(): void;
 }
 
 function Th({ children, reversed, sorted, onSort }: ThProps) {
@@ -96,6 +102,7 @@ type Resource = {
   isAutoUpdate: boolean;
 };
 
+// TODO: remove and add loaders
 const data: EnvironmentData[] = [
   {
     name: "Environment 1",
@@ -125,6 +132,15 @@ export function TableSort() {
   const [sortBy, setSortBy] = useState<keyof EnvironmentData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
+  // React.useEffect(() => {
+  //   axios
+  //     .get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS)
+  //     .then((response) => {
+  //       setSortedData(response.data.data);
+  //     })
+  //     .catch((e) => console.error(e));
+  // }, []);
+
   const setSorting = (field: keyof EnvironmentData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
@@ -145,6 +161,27 @@ export function TableSort() {
       <Table.Td>{row.createdAt}</Table.Td>
       <Table.Td>{row.name}</Table.Td>
       <Table.Td>{row.createdBy}</Table.Td>
+      <Table.Td>
+        <Group>
+          <ActionIcon
+            variant="filled"
+            color="rgba(71, 59, 59, 1)"
+            aria-label="Settings"
+          >
+            <IconRefresh style={{ width: "70%", height: "70%" }} stroke={1.5} />
+          </ActionIcon>{" "}
+          <ActionIcon
+            variant="filled"
+            color="rgba(71, 59, 59, 1)"
+            aria-label="Settings"
+          >
+            <IconSettings
+              style={{ width: "70%", height: "70%" }}
+              stroke={1.5}
+            />
+          </ActionIcon>
+        </Group>
+      </Table.Td>
     </Table.Tr>
   ));
 
@@ -191,6 +228,7 @@ export function TableSort() {
             >
               Created By
             </Th>
+            <Th>Actions</Th>
           </Table.Tr>
         </Table.Tbody>
         <Table.Tbody>
