@@ -124,14 +124,10 @@ export type Resource = {
 };
 
 type TableSortProps = {
-  handleDelete: () => void;
-  handleRedeploy: () => void;
+  handleReload: () => void;
 };
 
-export const TableSort: React.FC<TableSortProps> = ({
-  handleDelete,
-  handleRedeploy,
-}) => {
+export const TableSort: React.FC<TableSortProps> = ({ handleReload }) => {
   const { environmentList } = React.useContext(AppContext);
   const { open, setSelectedRow } = React.useContext(HomeContext);
 
@@ -156,13 +152,12 @@ export const TableSort: React.FC<TableSortProps> = ({
     );
 
     if (res.data && res.data.data === "OK") {
-      handleDelete();
+      handleReload();
+      notifications.show({
+        title: "Success",
+        message: "Environment deleted successfully",
+      });
     }
-
-    notifications.show({
-      title: "Success",
-      message: "Environment deleted successfully",
-    });
   };
 
   const handleRedeployFeatureEnvironment = async (id: string) => {
@@ -171,7 +166,7 @@ export const TableSort: React.FC<TableSortProps> = ({
         `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
       );
       if (res.data && res.data.data) {
-        handleRedeploy();
+        handleReload();
       }
 
       notifications.show({

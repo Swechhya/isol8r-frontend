@@ -8,7 +8,9 @@ import { CREATE_ENV, UPDATE_ENV } from "../../constants/endpoints";
 import { HomeContext } from "../../views/Home";
 import { notifications } from "@mantine/notifications";
 
-type LaunchModalProps = {};
+type LaunchModalProps = {
+  handleReload: () => void;
+};
 
 type LaunchModalContextType = {
   reposSelected: Resource[];
@@ -26,7 +28,7 @@ export const LaunchModalContext = React.createContext<LaunchModalContextType>({
   handlePortChange: () => {},
 });
 
-const LaunchModal: React.FC<LaunchModalProps> = () => {
+const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
   const [reposSelected, setReposSelected] = useState<Resource[]>([]);
   const { opened, close, row } = React.useContext(HomeContext);
 
@@ -102,14 +104,14 @@ const LaunchModal: React.FC<LaunchModalProps> = () => {
                 values
               );
 
-              if (response.status === 200) {
+              if (response.data && response.data.status === "OK") {
                 close!();
+                handleReload();
+                notifications.show({
+                  title: "Success",
+                  message: "Environment created successfully",
+                });
               }
-
-              notifications.show({
-                title: "Success",
-                message: "Environment created successfully",
-              });
             } catch (error) {
               notifications.show({
                 title: "Error",
