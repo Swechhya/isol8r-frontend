@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <Box>
       <Group align="center" justify="space-between" mb={32}>
-        <Title order={1}>Environments 🚀</Title>
+        <Title order={1}> Isolated Environments 🚀</Title>
         <Button size="md" radius="xl" color="teal" onClick={open}>
           Deploy New Environment
         </Button>
