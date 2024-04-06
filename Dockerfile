@@ -1,23 +1,20 @@
-# Use the official Node.js 16 image as the parent image
-FROM node:20
+FROM node:20-alpine AS builder
 
-# Set the working directory
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL $VITE_BACKEND_URL
+
+ENV NODE_ENV production
 WORKDIR /app
 
-# Copy the package files to the working directory
-COPY package*.json ./
+COPY ./package*.json ./
 
-# Install dependencies
 RUN npm install
-
-# Copy the rest of the application code to the working directory
 COPY . .
-
-# Build the application with Vite
 RUN npm run build
 
-# Expose React Port
-EXPOSE 3000
+FROM nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Run vite start
-CMD ["npm", "run", "dev"]
+EXPOSE 80 443
+CMD [ "nginx", "-g", "daemon off;" ]
