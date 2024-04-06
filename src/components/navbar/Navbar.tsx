@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Title } from "@mantine/core";
 import {
   IconSettings,
@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AppContext } from "../../App";
 
 const nav = [
   {
@@ -21,13 +22,26 @@ const nav = [
 
   {
     header: "Repos",
-    links: [{ link: "/repo/capi", label: "CAPI", icon: IconAppWindow }],
+    links: [],
   },
 ];
 
 export function NavbarSegmented() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { repos } = React.useContext(AppContext);
+  console.log(repos)
+
+  let repoNavs = nav.find(({ header }) => header === "Repos");
+
+  if (repoNavs) {
+    repoNavs.links = repos.map((repo) => ({
+      link: `/repo/${repo.name}`,
+      label: repo.name,
+      icon: IconAppWindow,
+    }));
+  }
 
   const currentActiveLabel = nav.reduce((activeLabel, { links }) => {
     if (activeLabel) return activeLabel;

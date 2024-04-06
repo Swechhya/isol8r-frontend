@@ -1,5 +1,5 @@
 import { AppShell, Burger, Stack } from "@mantine/core";
-import React from "react";
+import React, { Dispatch, SetStateAction, useContext } from "react";
 import { useLocation } from "react-router";
 import { Navigate } from "react-router-dom";
 import { NavbarSegmented } from "./components/navbar/Navbar";
@@ -19,10 +19,29 @@ const router = [
   },
 ];
 
+type RepoData = {
+  id: string;
+  name: string;
+};
+
+type AppContextType = {
+  repos: RepoData[];
+  setRepos: Dispatch<SetStateAction<never[]>>;
+};
+
+
+
+export const AppContext = React.createContext<AppContextType>({
+  repos: [],
+  setRepos: () => {},
+});
+
 const App: React.FC = () => {
   const [opened, { toggle }] = useDisclosure();
   const location = useLocation();
   let match: null | boolean | Object = null;
+
+  const [repos, setRepos] = React.useState([]);
 
   const MatchedComponent = router.find(({ path }) => {
     // extract param from path and location
@@ -62,29 +81,40 @@ const App: React.FC = () => {
   }
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 300,
-        breakpoint: "sm",
-        collapsed: { mobile: !opened },
-      }}
-      padding="md"
-    >
-      <AppShell.Header>
-        <Stack px={8} justify="center" h="100%">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        </Stack>
-      </AppShell.Header>
+    <AppContext.Provider value={{ repos, setRepos }}>
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{
+          width: 300,
+          breakpoint: "sm",
+          collapsed: { mobile: !opened },
+        }}
+        padding="md"
+      >
+        <AppShell.Header>
+          <Stack px={8} justify="center" h="100%">
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
+          </Stack>
+        </AppShell.Header>
 
-      <AppShell.Navbar>
-        <NavbarSegmented />
-      </AppShell.Navbar>
+        <AppShell.Navbar>
+          <NavbarSegmented />
+        </AppShell.Navbar>
 
-      <AppShell.Main>
-        {MatchedComponent && <MatchedComponent {...(match as { params: Record<string, string> }).params} />}
-      </AppShell.Main>
-    </AppShell>
+        <AppShell.Main>
+          {MatchedComponent && (
+            <MatchedComponent
+              {...(match as { params: Record<string, string> }).params}
+            />
+          )}
+        </AppShell.Main>
+      </AppShell>
+    </AppContext.Provider>
   );
 };
 
