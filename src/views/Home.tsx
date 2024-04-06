@@ -67,7 +67,7 @@ export default function Home() {
     >
       <Box>
         <Group align="center" justify="space-between" mb={32}>
-          <Title order={1}>Isolated Environments 🚀</Title>
+          <Title order={2} lh={1}>Isolated Environments 🚀</Title>
           <Button
             size="md"
             radius="xl"

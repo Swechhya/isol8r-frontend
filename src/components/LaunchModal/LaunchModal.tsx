@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, TextInput, Button } from "@mantine/core";
+import { Modal, TextInput, Button, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { RepoCards } from "./RepoCard";
 import { Resource } from "../table/Table";
@@ -90,7 +90,9 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
         size="50%"
         opened={opened!}
         onClose={close!}
-        title={`${row ? "Edit" : "Launch"} an environment`}
+        title={
+          <Title order={3}>{`${row ? "Edit" : "Launch"} an environment`}</Title>
+        }
         centered
       >
         <form
@@ -129,19 +131,14 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
             {...form.getInputProps("name")}
           />
           <TextInput
+            mt={8}
             label="Identifier"
             placeholder="Enter Identifier"
             required
             {...form.getInputProps("identifier")}
           />
           <RepoCards form={form} handleRepoSelected={handleSetReposSelected} />
-          <Button
-            mt={20}
-            size="md"
-            radius="xl"
-            color="rgba(138, 140, 132, 1)"
-            type="submit"
-          >
+          <Button mt={12} size="md" type="submit">
             Submit
           </Button>
         </form>

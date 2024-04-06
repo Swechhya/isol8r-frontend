@@ -214,7 +214,7 @@ export const TableSort: React.FC<TableSortProps> = ({ handleReload }) => {
       <Table.Td>{formatDate(row.createdAt)}</Table.Td>
       <Table.Td>{row.identifier}</Table.Td>
       <Table.Td>{row.name}</Table.Td>
-      <Table.Td>{row.createdBy}</Table.Td>
+      <Table.Td>Default user</Table.Td>
       <Table.Td>
         <Group>
           <ActionIcon

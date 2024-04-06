@@ -1,11 +1,12 @@
 import React from "react";
-import { Title } from "@mantine/core";
+import { Center, Container, Loader, Title } from "@mantine/core";
 import { IconHome, IconAppWindow } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppContext, RepoData } from "../../App";
 import axios from "axios";
 import { LIST_REPOS } from "../../constants/endpoints";
+import { notifications } from "@mantine/notifications";
 
 const nav = [
   {
@@ -22,6 +23,7 @@ const nav = [
 export function NavbarSegmented() {
   const [active, setActive] = React.useState("Home");
   const { setRepos } = React.useContext(AppContext);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,13 +57,39 @@ export function NavbarSegmented() {
         }, "");
 
         setActive(currentActiveLabel);
+      })
+      .catch((e) => {
+        notifications.show({
+          title: "Error",
+          message: "Failed to fetch repos",
+          color: "red",
+        });
+        console.error(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
-  const xnav = nav.map(({ header, links }) => {
+  const xnav = nav.map(({ header, links }, index) => {
+    if (header === "Repos" && isLoading) {
+      return (
+        <Container>
+          <Center mt={40}>
+            <Loader />
+          </Center>
+        </Container>
+      );
+    }
+
     return (
-      <div key={header} style={{ marginTop: "20px" }}>
-        <Title order={3} className={classes.navTitle} mb={8}>
+      <div key={header}>
+        <Title
+          order={2}
+          className={classes.navTitle}
+          mb={8}
+          mt={index !== 0 ? 20 : undefined}
+        >
           {header}
         </Title>
         {links.map((item) => {

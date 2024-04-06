@@ -149,8 +149,8 @@ export const RepoCards: React.FC<RepoCardProps> = ({
   const { repos } = React.useContext(AppContext);
 
   return (
-    <Box mt={42}>
-      <Title order={3}>Select repos to deploy</Title>
+    <Box mt={32}>
+      <Title order={4}>Select repos to deploy</Title>
       <Grid grow mt={16}>
         {repos.map((item) => (
           <Grid.Col key={item.id} span={{ base: 1, sm: 6 }}>
