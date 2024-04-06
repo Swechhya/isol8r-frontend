@@ -17,13 +17,10 @@ import {
   IconChevronUp,
   IconSearch,
   IconRefresh,
-  IconEdit,
   IconSettings,
 } from "@tabler/icons-react";
 import classes from "./table.module.css";
-import { Navigate } from "react-router";
-import { LIST_REPOS } from "../../constants/endpoints";
-import axios from "axios";
+import { AppContext } from "../../App";
 
 interface ThProps {
   children: React.ReactNode;
@@ -80,85 +77,75 @@ function sortData(
   return filterData(
     [...data].sort((a, b) => {
       if (payload.reversed) {
-        return b[sortBy].localeCompare(a[sortBy]);
+        if (typeof a[sortBy] === "string" && typeof b[sortBy] === "string") {
+          // @ts-ignore
+          return b[sortBy].localeCompare(a[sortBy]);
+        }
       }
 
+      // @ts-ignore
       return a[sortBy].localeCompare(b[sortBy]);
     }),
     payload.search
   );
 }
 
-type EnvironmentData = {
+export type EnvironmentData = {
   name: string;
-  dbType: "mongodb" | "mysql"; // Assuming these are the only two dbTypes you have, otherwise use string
-  createdAt: string; // Assuming ISO 8601 format, otherwise you might want to use Date
+  identifier: string;
+  description: string;
+  dbType: "MySQL" | "PostgreSQL";
   createdBy: string;
+  createdAt: string;
+  updatedAt: string;
   resources: Resource[];
 };
 
-type Resource = {
-  appName: string;
+export type Resource = {
+  featureEnvironmentId?: number;
+  repoId: string;
   isAutoUpdate: boolean;
+  branch: string;
+  link?: string;
 };
 
-// TODO: remove and add loaders
-const data: EnvironmentData[] = [
-  {
-    name: "Environment 1",
-    dbType: "mongodb",
-    createdAt: "2024-04-05T23:06:59+05:45",
-    createdBy: "User 1",
-    resources: [
-      { appName: "App 1", isAutoUpdate: true },
-      { appName: "App 2", isAutoUpdate: false },
-    ],
-  },
-  {
-    name: "Environment 2",
-    dbType: "mysql",
-    createdAt: "2024-04-05T23:06:59+05:45",
-    createdBy: "User 2",
-    resources: [
-      { appName: "App 3", isAutoUpdate: true },
-      { appName: "App 4", isAutoUpdate: true },
-    ],
-  },
-];
-
 export function TableSort() {
+  const { environmentList } = React.useContext(AppContext);
+
   const [search, setSearch] = useState("");
-  const [sortedData, setSortedData] = useState(data);
+  const [sortedData, setSortedData] = useState(environmentList);
   const [sortBy, setSortBy] = useState<keyof EnvironmentData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
-  // React.useEffect(() => {
-  //   axios
-  //     .get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS)
-  //     .then((response) => {
-  //       setSortedData(response.data.data);
-  //     })
-  //     .catch((e) => console.error(e));
-  // }, []);
+  React.useEffect(() => {
+    setSortedData(
+      sortData(environmentList, {
+        sortBy,
+        reversed: reverseSortDirection,
+        search,
+      })
+    );
+  }, [environmentList]);
 
   const setSorting = (field: keyof EnvironmentData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
     setSortBy(field);
-    setSortedData(sortData(data, { sortBy: field, reversed, search }));
+    setSortedData(sortData(sortedData, { sortBy: field, reversed, search }));
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
     setSortedData(
-      sortData(data, { sortBy, reversed: reverseSortDirection, search: value })
+      sortData(sortedData, { sortBy, reversed: reverseSortDirection, search: value })
     );
   };
 
   const rows = sortedData.map((row) => (
     <Table.Tr key={row.name}>
       <Table.Td>{row.createdAt}</Table.Td>
+      <Table.Td>{row.identifier}</Table.Td>
       <Table.Td>{row.name}</Table.Td>
       <Table.Td>{row.createdBy}</Table.Td>
       <Table.Td>
@@ -215,6 +202,13 @@ export function TableSort() {
               Created At
             </Th>
             <Th
+              sorted={sortBy === "identifier"}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting("identifier")}
+            >
+              Identifier
+            </Th>
+            <Th
               sorted={sortBy === "name"}
               reversed={reverseSortDirection}
               onSort={() => setSorting("name")}
@@ -228,6 +222,7 @@ export function TableSort() {
             >
               Created By
             </Th>
+
             <Th>Actions</Th>
           </Table.Tr>
         </Table.Tbody>
@@ -236,7 +231,7 @@ export function TableSort() {
             rows
           ) : (
             <Table.Tr>
-              <Table.Td colSpan={Object.keys(data[0]).length}>
+              <Table.Td colSpan={0}>
                 <Text fw={500} ta="center">
                   Nothing found
                 </Text>

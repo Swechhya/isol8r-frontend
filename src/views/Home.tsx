@@ -7,23 +7,25 @@ import { TableSort } from "../components/table/Table";
 import { useDisclosure } from "@mantine/hooks";
 import LaunchModal from "../components/LaunchModal/LaunchModal";
 import axios from "axios";
-import { LIST_REPOS } from "../constants/endpoints";
+import { LIST_ENV } from "../constants/endpoints";
 import { AppContext } from "../App";
 
 export default function Home() {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const { setRepos } = React.useContext(AppContext);
+  const { setEnvironmentList } = React.useContext(AppContext);
 
   React.useEffect(() => {
     axios
-      .get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS)
+      .get(import.meta.env.VITE_BACKEND_URL + LIST_ENV)
       .then((response) => {
         if (!response.data) {
           <Navigate to="/github-setup" replace={true} />;
         }
 
-        setRepos(response.data.data);
+        setEnvironmentList(response.data.data);
+
+        console.log({response: response.data.data})
       })
       .catch((e) => {
         // TODO: handle error with notifications system

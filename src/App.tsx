@@ -7,6 +7,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import Home from "./views/Home";
 import Repo from "./components/Repo/Repo";
+import { EnvironmentData } from "./components/table/Table";
 
 const router = [
   {
@@ -27,13 +28,15 @@ type RepoData = {
 type AppContextType = {
   repos: RepoData[];
   setRepos: Dispatch<SetStateAction<never[]>>;
+  environmentList: EnvironmentData[];
+  setEnvironmentList: Dispatch<SetStateAction<never[]>>;
 };
-
-
 
 export const AppContext = React.createContext<AppContextType>({
   repos: [],
   setRepos: () => {},
+  environmentList: [],
+  setEnvironmentList: () => {},
 });
 
 const App: React.FC = () => {
@@ -42,6 +45,7 @@ const App: React.FC = () => {
   let match: null | boolean | Object = null;
 
   const [repos, setRepos] = React.useState([]);
+  const [environmentList, setEnvironmentList] = React.useState([]);
 
   const MatchedComponent = router.find(({ path }) => {
     // extract param from path and location
@@ -74,14 +78,14 @@ const App: React.FC = () => {
     return true;
   })?.element;
 
-  console.log({ match });
-
   if (!match) {
     return <Navigate to="/404" replace />;
   }
 
   return (
-    <AppContext.Provider value={{ repos, setRepos }}>
+    <AppContext.Provider
+      value={{ repos, setRepos, environmentList, setEnvironmentList }}
+    >
       <AppShell
         header={{ height: 60 }}
         navbar={{

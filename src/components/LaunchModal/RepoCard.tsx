@@ -2,23 +2,26 @@ import {
   UnstyledButton,
   Checkbox,
   Text,
-  SimpleGrid,
   Title,
   Box,
   Group,
   Stack,
   Select,
+  Grid,
 } from "@mantine/core";
 import { useClickOutside, useUncontrolled } from "@mantine/hooks";
 import classes from "./repoCard.module.css";
-import { useState } from "react";
+import React from "react";
+import { AppContext } from "../../App";
+import axios from "axios";
+import { GET_BRANCHES } from "../../constants/endpoints";
+import { Resource } from "../table/Table";
 
 interface ImageCheckboxProps {
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?(checked: boolean): void;
-  title: string;
-  description: string;
+  name: string;
   handleRepoSelected: (repo: Resource) => void;
 }
 
@@ -30,13 +33,23 @@ export function RepoCard({
   checked,
   defaultChecked,
   onChange,
-  title,
-  description,
+  name,
+  id,
   className,
   handleRepoSelected,
   ...others
 }: ImageCheckboxProps &
   Omit<React.ComponentPropsWithoutRef<"button">, keyof ImageCheckboxProps>) {
+  const [branches, setBranches] = React.useState([]);
+
+  React.useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND_URL + GET_BRANCHES + `/${id}`)
+      .then((response) => {
+        setBranches(response.data.data);
+      });
+  }, []);
+
   const [value, handleChange] = useUncontrolled({
     value: checked,
     defaultValue: defaultChecked,
@@ -44,7 +57,7 @@ export function RepoCard({
     onChange,
   });
 
-  const [repoChecked, setRepoChecked] = useState<Boolean>(false);
+  const [repoChecked, setRepoChecked] = React.useState<Boolean>(false);
 
   const ref = useClickOutside(() => {
     console.log("clicked outside");
@@ -54,14 +67,11 @@ export function RepoCard({
     setRepoChecked(e.target.checked);
   };
 
-  const handleBranchChange = (value: string | null, title: string) => {
-    console.log(value);
+  const handleBranchChange = (branch: string | null, repoId: string) => {
     // if (!repoChecked) {
     //   return;
     // }
-    const repo: Resource = { appName: "", isAutoUpdate: false, branchName: "" };
-    repo.appName = title;
-    repo.branchName = value ?? "";
+    const repo: Resource = { isAutoUpdate: true, branch: branch ?? "", repoId };
 
     handleRepoSelected(repo);
   };
@@ -79,11 +89,8 @@ export function RepoCard({
       <Stack w="100%" p={0} m={0}>
         <Group>
           <div className={classes.body}>
-            <Text c="dimmed" size="xs" lh={1} mb={5}>
-              {description}
-            </Text>
             <Text fw={500} size="sm" lh={1}>
-              {title}
+              {name}
             </Text>
           </div>
 
@@ -99,11 +106,14 @@ export function RepoCard({
 
         <Select
           ref={ref}
-          label="Your favorite library"
-          placeholder="Pick value"
-          data={["React", "Angular", "Vue", "Svelte"]}
+          label="Branch"
+          placeholder="Select branch"
+          data={branches.map(({ name, commit: { sha } }) => ({
+            label: `${name} (${sha})`,
+            value: name,
+          }))}
           onChange={(value) => {
-            handleBranchChange(value, title);
+            handleBranchChange(value, id!);
           }}
         />
       </Stack>
@@ -111,27 +121,25 @@ export function RepoCard({
   );
 }
 
-const mockdata = [
-  { description: "Frontend", title: "Thanos" },
-  { description: "CAPI", title: "Core API" },
-  { description: "Backend", title: "DATA-SVC" },
-  { description: "Dashboard", title: "Dashboard" },
-];
-
 export const RepoCards: React.FC<RepoCardProps> = ({ handleRepoSelected }) => {
-  const items = mockdata.map((item) => (
-    <RepoCard
-      handleRepoSelected={handleRepoSelected}
-      {...item}
-      key={item.title}
-    />
-  ));
+  const { repos } = React.useContext(AppContext);
+
+  console.log("Repos", repos);
+
   return (
     <Box mt={42}>
       <Title order={3}>Select repos to deploy</Title>
-      <SimpleGrid mt={16} cols={{ base: 1, sm: 2, md: 4 }}>
-        {items}
-      </SimpleGrid>
+      <Grid grow mt={16}>
+        {repos.map((item) => (
+          <Grid.Col key={item.id} span={{ base: 1, sm: 6 }}>
+            <RepoCard
+              key={item.name}
+              handleRepoSelected={handleRepoSelected}
+              {...item}
+            />
+          </Grid.Col>
+        ))}
+      </Grid>
     </Box>
   );
 };

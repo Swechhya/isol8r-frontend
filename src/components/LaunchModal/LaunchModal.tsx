@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Modal, TextInput, Button } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { RepoCards } from "./RepoCard";
+import { Resource } from "../table/Table";
+import axios from "axios";
+import { CREATE_ENV } from "../../constants/endpoints";
 
 type LaunchModalProps = {
   opened: boolean;
@@ -13,8 +16,7 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
   const form = useForm({
     initialValues: {
       name: "",
-      dbType: "dev",
-      createdBy: "Sailesh",
+      identifier: "",
       resource: [] as Resource[],
     },
   });
@@ -22,7 +24,7 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
   const handleSetReposSelected = (repo: Resource) => {
     let valueReplaced = false;
     for (let i = 0; i < reposSelected.length; i++) {
-      if (reposSelected[i].appName == repo.appName) {
+      if (reposSelected[i].repoId == repo.repoId) {
         reposSelected[i] = repo;
         valueReplaced = true;
       }
@@ -46,7 +48,20 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
       <form
         onSubmit={form.onSubmit(async (values) => {
           values.resource = reposSelected;
-          console.log("Values", values);
+
+          try {
+            const response = await axios.post(
+              import.meta.env.VITE_BACKEND_URL + CREATE_ENV,
+              values
+            );
+
+            if (response.status === 200) {
+              close();
+            }
+          } catch (error) {
+            // TODO: handle notifs
+            console.error(error);
+          }
         })}
       >
         <TextInput
@@ -54,6 +69,12 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ opened, close }) => {
           placeholder="Enter environment name"
           required
           {...form.getInputProps("name")}
+        />
+        <TextInput
+          label="Identifier"
+          placeholder="Enter Identifier"
+          required
+          {...form.getInputProps("identifier")}
         />
         <RepoCards handleRepoSelected={handleSetReposSelected} />
         <Button

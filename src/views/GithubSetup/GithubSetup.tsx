@@ -18,10 +18,10 @@ export default function GithubSetup() {
   const navigate = useNavigate();
   const form = useForm({
     initialValues: {
-      clientID: "",
-      clientSecret: "",
-      installID: "",
-      appID: "",
+      clientID: "Iv1.3484a5cbceec7189",
+      clientSecret: "12d77149d9c0c525894462db85891771a4eb71b9",
+      installID: "870502",
+      appID: "49284279",
     },
   });
 

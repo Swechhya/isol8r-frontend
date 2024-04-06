@@ -10,6 +10,8 @@ import {
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppContext } from "../../App";
+import axios from "axios";
+import { LIST_REPOS } from "../../constants/endpoints";
 
 const nav = [
   {
@@ -30,8 +32,13 @@ export function NavbarSegmented() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { repos } = React.useContext(AppContext);
-  console.log(repos)
+  const { repos, setRepos } = React.useContext(AppContext);
+
+  React.useEffect(() => {
+    axios.get(import.meta.env.VITE_BACKEND_URL + LIST_REPOS).then((response) => {
+      setRepos(response.data.data);
+    });
+  }, []);
 
   let repoNavs = nav.find(({ header }) => header === "Repos");
 
