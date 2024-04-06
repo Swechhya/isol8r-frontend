@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Modal, TextInput, Button } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { RepoCards } from "./RepoCard";
-import { EnvironmentData, Resource } from "../table/Table";
+import { Resource } from "../table/Table";
 import axios from "axios";
-import { CREATE_ENV, SAVE_ENV, UPDATE_ENV } from "../../constants/endpoints";
+import { CREATE_ENV, UPDATE_ENV } from "../../constants/endpoints";
 import { HomeContext } from "../../views/Home";
 
 type LaunchModalProps = {};

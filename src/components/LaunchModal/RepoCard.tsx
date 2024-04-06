@@ -1,6 +1,5 @@
 import {
   UnstyledButton,
-  Checkbox,
   Text,
   Title,
   Box,
@@ -8,10 +7,9 @@ import {
   Stack,
   Select,
   Grid,
-  TextInput,
   NumberInput,
 } from "@mantine/core";
-import { useClickOutside, useUncontrolled } from "@mantine/hooks";
+import { useClickOutside } from "@mantine/hooks";
 import classes from "./repoCard.module.css";
 import React from "react";
 import { AppContext } from "../../App";
@@ -53,10 +51,10 @@ export function RepoCard({
     null
   );
 
-  const { reposSelected, setReposSelected, handlePortChange } =
+  const { reposSelected, handlePortChange } =
     React.useContext(LaunchModalContext);
 
-  const {row} = React.useContext(HomeContext);
+  const { row } = React.useContext(HomeContext);
 
   React.useEffect(() => {
     axios

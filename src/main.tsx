@@ -10,16 +10,11 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
 import NotFoundPage from "./views/NotFoundPage/NotFoundPage";
-import Login from "./views/Login/Login";
 
 const rootRouter = createBrowserRouter([
   {
     path: "/*",
     element: <App />,
-  },
-  {
-    path: "/",
-    element: <Login />,
   },
   {
     path: "/github-setup",

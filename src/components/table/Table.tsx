@@ -24,7 +24,8 @@ import classes from "./table.module.css";
 import { AppContext } from "../../App";
 import axios from "axios";
 import { DELETE_ENV, REDEPLOY_ENV } from "../../constants/endpoints";
-import Home, { HomeContext } from "../../views/Home";
+import { HomeContext } from "../../views/Home";
+import { formatDate } from "../../utils/util";
 
 interface ThProps {
   children: React.ReactNode;
@@ -63,6 +64,7 @@ function filterData(data: EnvironmentData[], search: string) {
       .some((key) => {
         return (
           typeof item[key] === "string" &&
+          // @ts-ignore
           item[key].toLowerCase().includes(query)
         );
       })
@@ -194,7 +196,7 @@ export const TableSort: React.FC<TableSortProps> = ({
 
   const rows = sortedData.map((row) => (
     <Table.Tr key={row.name}>
-      <Table.Td>{row.createdAt}</Table.Td>
+      <Table.Td>{formatDate(row.createdAt)}</Table.Td>
       <Table.Td>{row.identifier}</Table.Td>
       <Table.Td>{row.name}</Table.Td>
       <Table.Td>{row.createdBy}</Table.Td>

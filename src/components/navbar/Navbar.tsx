@@ -1,6 +1,6 @@
 import React from "react";
 import { Title } from "@mantine/core";
-import { IconSettings, IconHome, IconAppWindow } from "@tabler/icons-react";
+import { IconHome, IconAppWindow } from "@tabler/icons-react";
 import classes from "./navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppContext, RepoData } from "../../App";
@@ -21,7 +21,7 @@ const nav = [
 
 export function NavbarSegmented() {
   const [active, setActive] = React.useState("Home");
-  const { repos, setRepos } = React.useContext(AppContext);
+  const { setRepos } = React.useContext(AppContext);
 
   const location = useLocation();
   const navigate = useNavigate();

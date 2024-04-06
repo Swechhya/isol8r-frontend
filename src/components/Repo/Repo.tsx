@@ -110,9 +110,9 @@ const EnvFileUpload: React.FC<RepoChildrenProps> = (props) => {
   const [file, setFile] = React.useState<File | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
-  const { repo } = props;
+  console.log(isProcessing);
 
-  console.log({ props });
+  const { repo } = props;
 
   const handleFileChange = async (file: File | null) => {
     try {
