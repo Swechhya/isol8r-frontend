@@ -24,8 +24,6 @@ export default function Home() {
         }
 
         setEnvironmentList(response.data.data);
-
-        console.log({response: response.data.data})
       })
       .catch((e) => {
         // TODO: handle error with notifications system

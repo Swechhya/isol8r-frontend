@@ -18,9 +18,12 @@ import {
   IconSearch,
   IconRefresh,
   IconSettings,
+  IconTrash,
 } from "@tabler/icons-react";
 import classes from "./table.module.css";
 import { AppContext } from "../../App";
+import axios from "axios";
+import { DELETE_ENV, REDEPLOY_ENV } from "../../constants/endpoints";
 
 interface ThProps {
   children: React.ReactNode;
@@ -54,10 +57,12 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
 function filterData(data: EnvironmentData[], search: string) {
   const query = search.toLowerCase().trim();
   return data.filter((item) =>
-    keys(data[0])
-      .filter((item) => typeof item === "string")
-      // @ts-ignore
-      .some((key) => item[key].toLowerCase().includes(query))
+    keys(data[0]).some(
+      (key) =>
+        typeof item[key] === "string" &&
+        // @ts-ignore
+        item[key].toLowerCase().includes(query)
+    )
   );
 }
 
@@ -92,6 +97,7 @@ function sortData(
 }
 
 export type EnvironmentData = {
+  id: string;
   name: string;
   identifier: string;
   description: string;
@@ -128,6 +134,30 @@ export function TableSort() {
     );
   }, [environmentList]);
 
+  const handleDeleteFeatureEnvironment = async (id: string) => {
+    console.log("Delete", id);
+    console.log(
+      "Delete",
+      `${import.meta.env.VITE_BACKEND_URL}${DELETE_ENV}${id}`
+    );
+
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}${DELETE_ENV}${id}`
+    );
+
+    console.log(res.data);
+  };
+
+  const handleRedeployFeatureEnvironment = async (id: string) => {
+    console.log("Redeploy", id);
+
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
+    );
+
+    console.log(res.data);
+  };
+
   const setSorting = (field: keyof EnvironmentData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
@@ -139,7 +169,11 @@ export function TableSort() {
     const { value } = event.currentTarget;
     setSearch(value);
     setSortedData(
-      sortData(sortedData, { sortBy, reversed: reverseSortDirection, search: value })
+      sortData(sortedData, {
+        sortBy,
+        reversed: reverseSortDirection,
+        search: value,
+      })
     );
   };
 
@@ -155,6 +189,9 @@ export function TableSort() {
             variant="filled"
             color="rgba(71, 59, 59, 1)"
             aria-label="Settings"
+            onClick={() => {
+              handleRedeployFeatureEnvironment(row.id);
+            }}
           >
             <IconRefresh style={{ width: "70%", height: "70%" }} stroke={1.5} />
           </ActionIcon>{" "}
@@ -167,6 +204,16 @@ export function TableSort() {
               style={{ width: "70%", height: "70%" }}
               stroke={1.5}
             />
+          </ActionIcon>
+          <ActionIcon
+            variant="filled"
+            color="rgba(71, 59, 59, 1)"
+            aria-label="Settings"
+            onClick={() => {
+              handleDeleteFeatureEnvironment(row.id);
+            }}
+          >
+            <IconTrash style={{ width: "70%", height: "70%" }} stroke={1.5} />
           </ActionIcon>
         </Group>
       </Table.Td>
