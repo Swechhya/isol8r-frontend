@@ -1,1 +1,1 @@
-export const LIST_REPOS = "/fe/list";
+export const LIST_REPOS = "/repos";

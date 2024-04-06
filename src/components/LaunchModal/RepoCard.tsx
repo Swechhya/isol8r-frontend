@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useClickOutside, useUncontrolled } from "@mantine/hooks";
 import classes from "./repoCard.module.css";
+import { useState } from "react";
 
 interface ImageCheckboxProps {
   checked?: boolean;
@@ -18,6 +19,11 @@ interface ImageCheckboxProps {
   onChange?(checked: boolean): void;
   title: string;
   description: string;
+  handleRepoSelected: (repo: Resource) => void;
+}
+
+interface RepoCardProps {
+  handleRepoSelected: (repo: Resource) => void;
 }
 
 export function RepoCard({
@@ -27,6 +33,7 @@ export function RepoCard({
   title,
   description,
   className,
+  handleRepoSelected,
   ...others
 }: ImageCheckboxProps &
   Omit<React.ComponentPropsWithoutRef<"button">, keyof ImageCheckboxProps>) {
@@ -37,9 +44,27 @@ export function RepoCard({
     onChange,
   });
 
+  const [repoChecked, setRepoChecked] = useState<Boolean>(false);
+
   const ref = useClickOutside(() => {
     console.log("clicked outside");
   });
+
+  const handleCheckBoxChange = (e: any) => {
+    setRepoChecked(e.target.checked);
+  };
+
+  const handleBranchChange = (value: string | null, title: string) => {
+    console.log(value);
+    // if (!repoChecked) {
+    //   return;
+    // }
+    const repo: Resource = { appName: "", isAutoUpdate: false, branchName: "" };
+    repo.appName = title;
+    repo.branchName = value ?? "";
+
+    handleRepoSelected(repo);
+  };
 
   return (
     <UnstyledButton
@@ -64,7 +89,9 @@ export function RepoCard({
 
           <Checkbox
             checked={value}
-            onChange={() => {}}
+            onChange={(e) => {
+              handleCheckBoxChange(e);
+            }}
             tabIndex={-1}
             styles={{ input: { cursor: "pointer" } }}
           />
@@ -75,6 +102,9 @@ export function RepoCard({
           label="Your favorite library"
           placeholder="Pick value"
           data={["React", "Angular", "Vue", "Svelte"]}
+          onChange={(value) => {
+            handleBranchChange(value, title);
+          }}
         />
       </Stack>
     </UnstyledButton>
@@ -88,8 +118,14 @@ const mockdata = [
   { description: "Dashboard", title: "Dashboard" },
 ];
 
-export function RepoCards() {
-  const items = mockdata.map((item) => <RepoCard {...item} key={item.title} />);
+export const RepoCards: React.FC<RepoCardProps> = ({ handleRepoSelected }) => {
+  const items = mockdata.map((item) => (
+    <RepoCard
+      handleRepoSelected={handleRepoSelected}
+      {...item}
+      key={item.title}
+    />
+  ));
   return (
     <Box mt={42}>
       <Title order={3}>Select repos to deploy</Title>
@@ -98,4 +134,4 @@ export function RepoCards() {
       </SimpleGrid>
     </Box>
   );
-}
+};
