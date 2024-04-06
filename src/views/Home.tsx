@@ -9,6 +9,7 @@ import LaunchModal from "../components/LaunchModal/LaunchModal";
 import axios from "axios";
 import { LIST_ENV } from "../constants/endpoints";
 import { AppContext } from "../App";
+import { notifications } from "@mantine/notifications";
 
 type HomeContextType = {
   opened: boolean;
@@ -55,7 +56,11 @@ export default function Home() {
         setEnvironmentList(response?.data?.data ?? []);
       })
       .catch((e) => {
-        // TODO: handle error with notifications system
+        notifications.show({
+          title: "Error",
+          message: "Error fetching environments",
+          color: "red",
+        });
         console.error(e);
       });
   }, [delteSuccess, redeploySuccess]);

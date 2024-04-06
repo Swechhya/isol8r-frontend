@@ -22,6 +22,7 @@ import { IconCheck, IconCopy } from "@tabler/icons-react";
 import axios from "axios";
 import { SAVE_ENV } from "../../constants/endpoints";
 import { AppContext, RepoData } from "../../App";
+import { notifications } from "@mantine/notifications";
 
 type RepoProps = {
   id?: string;
@@ -133,13 +134,17 @@ const EnvFileUpload: React.FC<RepoChildrenProps> = (props) => {
         }
       );
       if (response.status === 200) {
-        // TODO: handle notifs system
-        alert("File uploaded successfully");
-      } else {
-        alert("Failed to upload file");
+        notifications.show({
+          title: "Success",
+          message: "File uploaded successfully",
+        });
       }
     } catch (error) {
-      // TODO: handle notifs system
+      notifications.show({
+        title: "Error",
+        message: "Failed to upload file",
+        color: "red",
+      });
       console.log(error);
     } finally {
       setIsProcessing((p) => !p);

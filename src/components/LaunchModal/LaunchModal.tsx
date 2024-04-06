@@ -6,6 +6,7 @@ import { Resource } from "../table/Table";
 import axios from "axios";
 import { CREATE_ENV, UPDATE_ENV } from "../../constants/endpoints";
 import { HomeContext } from "../../views/Home";
+import { notifications } from "@mantine/notifications";
 
 type LaunchModalProps = {};
 
@@ -104,8 +105,17 @@ const LaunchModal: React.FC<LaunchModalProps> = () => {
               if (response.status === 200) {
                 close!();
               }
+
+              notifications.show({
+                title: "Success",
+                message: "Environment created successfully",
+              });
             } catch (error) {
-              // TODO: handle notifs
+              notifications.show({
+                title: "Error",
+                message: "Failed to create environment",
+                color: "red",
+              });
               console.error(error);
             }
           })}

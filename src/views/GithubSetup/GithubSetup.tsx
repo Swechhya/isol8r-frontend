@@ -13,6 +13,7 @@ import { useForm } from "@mantine/form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { HOME } from "../../constants/routes";
+import { notifications } from "@mantine/notifications";
 
 export default function GithubSetup() {
   const navigate = useNavigate();
@@ -68,10 +69,18 @@ export default function GithubSetup() {
                     );
 
                     if (res.status === 200) {
+                      notifications.show({
+                        title: "Success",
+                        message: "Github setup successfully",
+                      });
                       navigate(HOME);
                     }
                   } catch (error) {
-                    // TODO: handle notifications error
+                    notifications.show({
+                      title: "Error",
+                      message: "Failed to setup github",
+                      color: "red",
+                    });
                     console.log(error);
                   }
                 })}

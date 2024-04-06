@@ -25,6 +25,7 @@ import { AppContext } from "../../App";
 import axios from "axios";
 import { DELETE_ENV, REDEPLOY_ENV } from "../../constants/endpoints";
 import { HomeContext } from "../../views/Home";
+import { notifications } from "@mantine/notifications";
 import { formatDate } from "../../utils/util";
 
 interface ThProps {
@@ -157,15 +158,34 @@ export const TableSort: React.FC<TableSortProps> = ({
     if (res.data && res.data.data === "OK") {
       handleDelete();
     }
-    // TODO: add notifs system
+
+    notifications.show({
+      title: "Success",
+      message: "Environment deleted successfully",
+    });
   };
 
   const handleRedeployFeatureEnvironment = async (id: string) => {
-    const res = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
-    );
-    if (res.data && res.data.data) {
-      handleRedeploy();
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}${REDEPLOY_ENV}${id}`
+      );
+      if (res.data && res.data.data) {
+        handleRedeploy();
+      }
+
+      notifications.show({
+        title: "Success",
+        message: "Environment redeployed successfully",
+      });
+    } catch (error) {
+      notifications.show({
+        title: "Error",
+        message: "Failed to redeploy environment",
+        color: "red",
+      });
+
+      console.error(error);
     }
   };
 

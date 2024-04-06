@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import "@mantine/core/styles.css";
+import '@mantine/notifications/styles.css';
+
 import { Notifications } from "@mantine/notifications";
 
 import App from "./App";
@@ -29,7 +31,7 @@ const rootRouter = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="dark">
-      <Notifications />
+      <Notifications autoClose={2000}/>
       <RouterProvider router={rootRouter} />
     </MantineProvider>
   </React.StrictMode>
