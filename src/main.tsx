@@ -30,7 +30,7 @@ const rootRouter = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MantineProvider theme={theme} defaultColorScheme="dark">
+    <MantineProvider theme={theme} defaultColorScheme="auto">
       <Notifications autoClose={2000}/>
       <RouterProvider router={rootRouter} />
     </MantineProvider>

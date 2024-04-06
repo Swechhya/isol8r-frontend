@@ -20,7 +20,7 @@ import classes from "./githubSetup.module.css";
 export default function GithubSetup() {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState<boolean>(false);
-  
+
   const form = useForm({
     initialValues: {
       clientID: "Iv1.3484a5cbceec7189",
@@ -45,7 +45,7 @@ export default function GithubSetup() {
             try {
               setLoading(true);
               const res = await axios.post(
-                "http://localhost:8080/gh/setup",
+                import.meta.env.VITE_BACKEND_URL + "/gh/setup",
                 values,
                 {
                   headers: {
@@ -114,7 +114,13 @@ export default function GithubSetup() {
             />
           </div>
 
-          <Button loading={loading} disabled={loading} type="submit" fullWidth mt="xl">
+          <Button
+            loading={loading}
+            disabled={loading}
+            type="submit"
+            fullWidth
+            mt="xl"
+          >
             Submit
           </Button>
         </form>
