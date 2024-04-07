@@ -22,7 +22,7 @@ export default function NotFoundPage() {
             this is an error contact support.
           </Text>
           <Group justify="center">
-            <Link to="/github-setup">
+            <Link to="/">
               <Button size="md">Take me back to home page</Button>
             </Link>
           </Group>

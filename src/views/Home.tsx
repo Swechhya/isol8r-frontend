@@ -46,7 +46,7 @@ export default function Home() {
       .get(import.meta.env.VITE_BACKEND_URL + LIST_ENV)
       .then((response) => {
         if (!response.data) {
-          <Navigate to="/github-setup" replace={true} />;
+          <Navigate to="/" replace={true} />;
         }
 
         setEnvironmentList(response?.data?.data ?? []);
