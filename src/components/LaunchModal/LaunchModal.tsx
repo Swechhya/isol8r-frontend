@@ -31,6 +31,7 @@ export const LaunchModalContext = React.createContext<LaunchModalContextType>({
 const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
   const [reposSelected, setReposSelected] = useState<Resource[]>([]);
   const { opened, close, row } = React.useContext(HomeContext);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     form.setValues({
@@ -100,6 +101,7 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
             values.resources = reposSelected;
 
             try {
+              setLoading(true);
               const response = await axios.post(
                 import.meta.env.VITE_BACKEND_URL +
                   (row ? UPDATE_ENV + `/${row?.id}` : CREATE_ENV),
@@ -121,6 +123,8 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
                 color: "red",
               });
               console.error(error);
+            } finally {
+              setLoading(false);
             }
           })}
         >
@@ -138,7 +142,13 @@ const LaunchModal: React.FC<LaunchModalProps> = ({ handleReload }) => {
             {...form.getInputProps("identifier")}
           />
           <RepoCards form={form} handleRepoSelected={handleSetReposSelected} />
-          <Button mt={12} size="md" type="submit">
+          <Button
+            loading={loading}
+            disabled={loading}
+            mt={12}
+            size="md"
+            type="submit"
+          >
             Submit
           </Button>
         </form>
